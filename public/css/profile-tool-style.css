@@ -1,0 +1,74 @@
+/* AI Profile Photo Tool Styling */
+
+.ai-tool-wrapper {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+#drop-zone {
+    background-color: #f8f9fa;
+    border: 2px dashed #3498db;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#drop-zone:hover {
+    background-color: #ecf0f1;
+    border-color: #2980b9;
+}
+
+#upload-prompt {
+    font-size: 18px;
+    color: #7f8c8d;
+    text-align: center;
+}
+
+.size-btn {
+    padding: 10px;
+    background-color: #eeeeee;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.size-btn:hover {
+    background-color: #dcdcdc;
+}
+
+.size-btn.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #2980b9;
+}
+
+#download-btn {
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+#download-btn:hover:not([disabled]) {
+    background-color: #219150;
+}
+
+#ai-loader {
+    font-weight: 600;
+    padding: 10px;
+    background: #e1f5fe;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .ai-tool-wrapper {
+        padding: 15px;
+    }
+    #drop-zone {
+        height: 250px;
+    }
+}
