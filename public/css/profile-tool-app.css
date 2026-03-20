@@ -1,1 +1,36 @@
+.ppt-app {
+	display: grid;
+	grid-template-columns: 280px 1fr 280px;
+	gap: 20px;
+	max-width: 1400px;
+	margin: 40px auto;
+	padding: 20px;
+	font-family: Arial, sans-serif;
+}
 
+.ppt-app__sidebar,
+.ppt-app__workspace,
+.ppt-app__export {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 16px;
+	padding: 20px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.ppt-app__preview {
+	min-height: 500px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background: #f9fafb;
+	border: 2px dashed #d1d5db;
+	border-radius: 12px;
+}
+
+@media (max-width: 1024px) {
+	.ppt-app {
+		grid-template-columns: 1fr;
+	}
+}
