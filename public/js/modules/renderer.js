@@ -27,12 +27,25 @@ window.PPTRenderer = (function () {
 		ctx.fillText('Upload an image to begin editing', canvas.width / 2, canvas.height / 2 + 24);
 	}
 
-	function drawImageCover(ctx, canvas, image) {
-		const scale = Math.max(canvas.width / image.width, canvas.height / image.height);
+	function getBaseScale(canvas, image, fitMode) {
+		if (fitMode === 'fit') {
+			return Math.min(canvas.width / image.width, canvas.height / image.height);
+		}
+
+		return Math.max(canvas.width / image.width, canvas.height / image.height);
+	}
+
+	function drawImageTransformed(ctx, canvas, image, state) {
+		const baseScale = getBaseScale(canvas, image, state.fitMode);
+		const scale = baseScale * state.zoom;
+
 		const drawWidth = image.width * scale;
 		const drawHeight = image.height * scale;
-		const x = (canvas.width - drawWidth) / 2;
-		const y = (canvas.height - drawHeight) / 2;
+		const centerX = (canvas.width - drawWidth) / 2;
+		const centerY = (canvas.height - drawHeight) / 2;
+
+		const x = centerX + state.offsetX;
+		const y = centerY + state.offsetY;
 
 		ctx.drawImage(image, x, y, drawWidth, drawHeight);
 	}
@@ -62,7 +75,7 @@ window.PPTRenderer = (function () {
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 		if (state.image) {
-			drawImageCover(ctx, canvas, state.image);
+			drawImageTransformed(ctx, canvas, state.image, state);
 		} else {
 			drawPlaceholder(ctx, canvas);
 		}
