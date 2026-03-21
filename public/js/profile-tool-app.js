@@ -27,10 +27,18 @@ document.addEventListener('DOMContentLoaded', function () {
 	const exportFormatInput = document.getElementById('ppt-export-format');
 	const exportSizeInput = document.getElementById('ppt-export-size');
 	const exportQualityInput = document.getElementById('ppt-export-quality');
+	const zoomRange = document.getElementById('ppt-zoom-range');
+	const controlButtons = document.querySelectorAll('.ppt-control-actions .ppt-btn');
 
 	const State = window.PPTEditorState;
 	const Renderer = window.PPTRenderer;
 	const Uploader = window.PPTUploader;
+
+	let isDragging = false;
+	let dragStartX = 0;
+	let dragStartY = 0;
+	let dragStartOffsetX = 0;
+	let dragStartOffsetY = 0;
 
 	function getState() {
 		return State.getState();
@@ -59,6 +67,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		statusText.textContent = state.image ? 'Image loaded' : 'No image uploaded';
 		previewRatioLabel.textContent = `Ratio: ${state.selectedRatio}`;
 		downloadBtn.disabled = !state.image;
+
+		if (zoomRange) {
+			zoomRange.value = state.zoom;
+		}
 	}
 
 	function renderPreview(state) {
@@ -80,6 +92,19 @@ document.addEventListener('DOMContentLoaded', function () {
 		renderPreview(state);
 	}
 
+	function handleLoadedFile(payload) {
+		State.resetTransform();
+
+		setState({
+			image: payload.image,
+			imageName: payload.imageName,
+			zoom: 1,
+			offsetX: 0,
+			offsetY: 0,
+			fitMode: 'fill'
+		});
+	}
+
 	function bindUpload() {
 		if (uploadTrigger) {
 			uploadTrigger.addEventListener('click', function () {
@@ -97,12 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			fileInput.addEventListener('change', function (event) {
 				const file = event.target.files[0];
 
-				Uploader.loadImageFile(file, function (payload) {
-					setState({
-						image: payload.image,
-						imageName: payload.imageName
-					});
-				});
+				Uploader.loadImageFile(file, handleLoadedFile);
 			});
 		}
 	}
@@ -132,12 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const files = event.dataTransfer.files;
 
 			if (files && files.length > 0) {
-				Uploader.loadImageFile(files[0], function (payload) {
-					setState({
-						image: payload.image,
-						imageName: payload.imageName
-					});
-				});
+				Uploader.loadImageFile(files[0], handleLoadedFile);
 			}
 		});
 	}
@@ -214,6 +229,119 @@ document.addEventListener('DOMContentLoaded', function () {
 				});
 			});
 		}
+
+		if (zoomRange) {
+			zoomRange.addEventListener('input', function () {
+				setState({
+					zoom: parseFloat(this.value) || 1
+				});
+			});
+		}
+	}
+
+	function bindTransformButtons() {
+		if (!controlButtons.length) {
+			return;
+		}
+
+		controlButtons.forEach(function (button) {
+			button.addEventListener('click', function () {
+				const label = this.textContent.trim().toLowerCase();
+
+				if (label === 'fit') {
+					setState({
+						fitMode: 'fit',
+						zoom: 1,
+						offsetX: 0,
+						offsetY: 0
+					});
+				}
+
+				if (label === 'fill') {
+					setState({
+						fitMode: 'fill',
+						zoom: 1,
+						offsetX: 0,
+						offsetY: 0
+					});
+				}
+
+				if (label === 'reset') {
+					State.resetTransform();
+					updateUI();
+				}
+			});
+		});
+	}
+
+	function getPointerPosition(event) {
+		if (event.touches && event.touches.length > 0) {
+			return {
+				x: event.touches[0].clientX,
+				y: event.touches[0].clientY
+			};
+		}
+
+		return {
+			x: event.clientX,
+			y: event.clientY
+		};
+	}
+
+	function bindCanvasDragging() {
+		if (!previewCanvas) {
+			return;
+		}
+
+		function startDrag(event) {
+			const state = getState();
+
+			if (!state.image) {
+				return;
+			}
+
+			const point = getPointerPosition(event);
+
+			isDragging = true;
+			dragStartX = point.x;
+			dragStartY = point.y;
+			dragStartOffsetX = state.offsetX;
+			dragStartOffsetY = state.offsetY;
+
+			previewCanvas.style.cursor = 'grabbing';
+			event.preventDefault();
+		}
+
+		function moveDrag(event) {
+			if (!isDragging) {
+				return;
+			}
+
+			const point = getPointerPosition(event);
+			const deltaX = point.x - dragStartX;
+			const deltaY = point.y - dragStartY;
+
+			setState({
+				offsetX: dragStartOffsetX + deltaX,
+				offsetY: dragStartOffsetY + deltaY
+			});
+		}
+
+		function endDrag() {
+			isDragging = false;
+			previewCanvas.style.cursor = 'grab';
+		}
+
+		previewCanvas.style.cursor = 'grab';
+
+		previewCanvas.addEventListener('mousedown', startDrag);
+		previewCanvas.addEventListener('touchstart', startDrag, { passive: false });
+
+		window.addEventListener('mousemove', moveDrag);
+		window.addEventListener('touchmove', moveDrag, { passive: false });
+
+		window.addEventListener('mouseup', endDrag);
+		window.addEventListener('touchend', endDrag);
 	}
 
 	function bindDownloadPlaceholder() {
@@ -241,9 +369,11 @@ document.addEventListener('DOMContentLoaded', function () {
 		bindDropZone();
 		bindRatioButtons();
 		bindControls();
+		bindTransformButtons();
+		bindCanvasDragging();
 		bindDownloadPlaceholder();
 
-		console.log('Step 4 editor foundation initialized.', window.pptAppConfig || {});
+		console.log('Step 5 transform engine initialized.', window.pptAppConfig || {});
 	}
 
 	init();
