@@ -8,7 +8,7 @@ window.PPTEditorState = (function () {
 		custom: { width: 1080, height: 1080 }
 	};
 
-	const state = {
+	const defaultState = {
 		image: null,
 		imageName: '',
 		selectedRatio: '1:1',
@@ -18,8 +18,14 @@ window.PPTEditorState = (function () {
 		backgroundColor: '#ffffff',
 		exportFormat: 'png',
 		exportSize: '1080',
-		exportQuality: 0.92
+		exportQuality: 0.92,
+		zoom: 1,
+		offsetX: 0,
+		offsetY: 0,
+		fitMode: 'fill'
 	};
+
+	const state = { ...defaultState };
 
 	function getState() {
 		return state;
@@ -30,6 +36,13 @@ window.PPTEditorState = (function () {
 		return state;
 	}
 
+	function resetTransform() {
+		state.zoom = 1;
+		state.offsetX = 0;
+		state.offsetY = 0;
+		state.fitMode = 'fill';
+	}
+
 	function getRatioDimensions(ratio) {
 		return ratioMap[ratio] || ratioMap['1:1'];
 	}
@@ -37,6 +50,7 @@ window.PPTEditorState = (function () {
 	return {
 		getState,
 		setState,
+		resetTransform,
 		getRatioDimensions
 	};
 })();
