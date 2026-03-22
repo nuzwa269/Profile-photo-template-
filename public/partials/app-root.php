@@ -1,4 +1,4 @@
-<div id="ppt-app" class="ppt-app">
+<div id="ppt-app" class="ppt-app" data-tool-url="<?php echo esc_attr( $tool_url ); ?>" data-prompt-template="<?php echo esc_attr( $prompt_template ); ?>">
 	<aside class="ppt-sidebar">
 		<div class="ppt-panel ppt-brand-panel">
 			<div class="ppt-brand">
@@ -199,6 +199,32 @@
 				<li><strong>Frame:</strong> <span id="ppt-summary-frame">Enabled</span></li>
 			</ul>
 		</div>
+
+		<div class="ppt-panel">
+			<div class="ppt-panel__header">
+				<h3>Related Resources</h3>
+			</div>
+
+			<div class="ppt-resource-tabs">
+				<button type="button" class="ppt-chip is-active" data-resource-tab="tool">Tool Link</button>
+				<button type="button" class="ppt-chip" data-resource-tab="template">Prompt Template</button>
+			</div>
+
+			<div class="ppt-resource-panel is-active" data-resource-panel="tool">
+				<p class="ppt-resource-help">Click the button below to open your connected tool on the frontend.</p>
+				<a class="ppt-btn ppt-btn--primary ppt-btn--block" id="ppt-tool-link" href="<?php echo esc_url( $tool_url ); ?>" target="_blank" rel="noopener noreferrer">
+					Open Tool
+				</a>
+				<p class="ppt-resource-empty" id="ppt-tool-link-empty"<?php echo empty( $tool_url ) ? '' : ' style="display:none;"'; ?>>No tool URL added yet. Pass the link via the shortcode.</p>
+			</div>
+
+			<div class="ppt-resource-panel" data-resource-panel="template">
+				<p class="ppt-resource-help">When the Prompt Template tab is clicked, the configured template will appear here.</p>
+				<textarea id="ppt-prompt-template" class="ppt-template-box" rows="8" readonly><?php echo esc_textarea( $prompt_template ); ?></textarea>
+				<p class="ppt-resource-empty" id="ppt-template-empty"<?php echo empty( $prompt_template ) ? '' : ' style="display:none;"'; ?>>No prompt template added yet. Pass the template via the shortcode.</p>
+			</div>
+		</div>
+
 
 		<div class="ppt-panel">
 			<div class="ppt-panel__header">
