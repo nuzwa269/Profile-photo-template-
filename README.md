@@ -22,6 +22,7 @@ An AI-powered WordPress plugin to create optimized profile photos for various so
 ## Usage
 
 1. Add the shortcode `[ai_profile_tool]` to any WordPress page or post
+   - Optional example with related resources: `[ai_profile_tool tool_url="https://example.com/my-tool" prompt_template="Write a friendly teacher bio for LinkedIn."]`
 2. Upload your image by dragging and dropping or clicking the upload area
 3. Select your target social media platform (Instagram, LinkedIn, etc.)
 4. Enable AI features (background removal) if desired

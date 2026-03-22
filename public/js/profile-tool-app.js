@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', function () {
 	const exportQualityInput = document.getElementById('ppt-export-quality');
 	const zoomRange = document.getElementById('ppt-zoom-range');
 	const controlButtons = document.querySelectorAll('.ppt-control-actions .ppt-btn');
+	const resourceTabButtons = document.querySelectorAll('[data-resource-tab]');
+	const resourcePanels = document.querySelectorAll('[data-resource-panel]');
+	const toolLink = document.getElementById('ppt-tool-link');
+	const toolLinkEmpty = document.getElementById('ppt-tool-link-empty');
+	const promptTemplate = document.getElementById('ppt-prompt-template');
+	const promptTemplateEmpty = document.getElementById('ppt-template-empty');
 
 	const State = window.PPTEditorState;
 	const Renderer = window.PPTRenderer;
@@ -239,6 +245,48 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
+
+	function bindResourceTabs() {
+		if (!resourceTabButtons.length || !resourcePanels.length) {
+			return;
+		}
+
+		const toolUrl = app.dataset.toolUrl || '';
+		const templateText = app.dataset.promptTemplate || '';
+
+		if (toolLink) {
+			toolLink.href = toolUrl || '#';
+			toolLink.style.display = toolUrl ? 'inline-flex' : 'none';
+		}
+
+		if (toolLinkEmpty) {
+			toolLinkEmpty.style.display = toolUrl ? 'none' : 'block';
+		}
+
+		if (promptTemplate) {
+			promptTemplate.value = templateText;
+			promptTemplate.style.display = templateText ? 'block' : 'none';
+		}
+
+		if (promptTemplateEmpty) {
+			promptTemplateEmpty.style.display = templateText ? 'none' : 'block';
+		}
+
+		resourceTabButtons.forEach(function (button) {
+			button.addEventListener('click', function () {
+				const tab = this.getAttribute('data-resource-tab');
+
+				resourceTabButtons.forEach(function (btn) {
+					btn.classList.toggle('is-active', btn === button);
+				});
+
+				resourcePanels.forEach(function (panel) {
+					panel.classList.toggle('is-active', panel.getAttribute('data-resource-panel') === tab);
+				});
+			});
+		});
+	}
+
 	function bindTransformButtons() {
 		if (!controlButtons.length) {
 			return;
@@ -369,6 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		bindDropZone();
 		bindRatioButtons();
 		bindControls();
+		bindResourceTabs();
 		bindTransformButtons();
 		bindCanvasDragging();
 		bindDownloadPlaceholder();
